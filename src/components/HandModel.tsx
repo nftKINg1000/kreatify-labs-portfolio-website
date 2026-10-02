@@ -17,24 +17,34 @@ interface Pose {
   rotation: [number, number, number];
 }
 
-/** One pose per scroll stop, in page order (mirrors lenis.dev's arm keyframes). */
+/**
+ * One pose per scroll stop, in page order (mirrors lenis.dev's arm keyframes). Scale is the
+ * full model's height; only the hand, wrist and a fading stub of forearm are drawn (see CUT),
+ * so the visible part is about 0.68 × scale, kept small and distant like lenis.dev.
+ */
 const DESKTOP_POSES: Pose[] = [
-  { position: [-0.075, -0.42], scale: 1.0, rotation: [deg(5), deg(-20), 0] }, // top: rising behind the hero
-  { position: [-0.04, -0.36], scale: 0.92, rotation: [deg(-8), deg(40), deg(-8)] }, // who we build for — start
-  { position: [-0.02, -0.34], scale: 0.92, rotation: [deg(4), deg(160), deg(6)] }, // who we build for — end
-  { position: [0.3, 0.06], scale: 0.5, rotation: [deg(20), deg(200), deg(30)] }, // capabilities — start
-  { position: [-0.95, 0.08], scale: 0.75, rotation: [deg(-10), deg(320), deg(10)] }, // capabilities — end (drifts out left)
-  { position: [0.18, -1.35], scale: 0.95, rotation: [0, deg(200), deg(-16)] }, // navy sections begin (below view)
-  { position: [0, -0.48], scale: 0.85, rotation: [0, deg(-14), deg(-16)] }, // lifecycle cards
-  { position: [0.22, -0.3], scale: 0.62, rotation: [0, deg(-700), deg(-16)] }, // end of page
+  { position: [-0.08, -0.31], scale: 0.6, rotation: [deg(8), deg(-25), deg(4)] }, // top: floating below the wordmark
+  { position: [0.15, -0.12], scale: 0.66, rotation: [deg(-20), deg(30), deg(-18)] }, // who we build for — start
+  { position: [0.11, -0.1], scale: 0.66, rotation: [deg(10), deg(150), deg(-8)] }, // who we build for — end
+  { position: [0.3, 0.1], scale: 0.42, rotation: [deg(20), deg(200), deg(25)] }, // capabilities — start
+  { position: [-0.95, 0.08], scale: 0.55, rotation: [deg(-10), deg(320), deg(10)] }, // capabilities — end (drifts out left)
+  { position: [0.18, -1.2], scale: 0.7, rotation: [0, deg(200), deg(-16)] }, // navy sections begin (below view)
+  { position: [0.06, -0.2], scale: 0.62, rotation: [0, deg(-14), deg(-16)] }, // lifecycle cards
+  { position: [0.22, -0.14], scale: 0.5, rotation: [0, deg(-700), deg(-16)] }, // end of page
 ];
 
 /** Narrow screens: centred, smaller sweeps. */
 const MOBILE_POSES: Pose[] = DESKTOP_POSES.map((pose, i) => ({
   ...pose,
-  position: i === 0 ? [0, -0.3] : [pose.position[0] * 0.6, pose.position[1]],
-  scale: i === 0 ? 0.78 : pose.scale * 0.75,
+  position: i === 0 ? [0, -0.18] : [pose.position[0] * 0.5, pose.position[1]],
+  scale: pose.scale * 0.8,
 }));
+
+/** Depth of the hand behind the page plane — pushes it back so it reads as distant (lenis.dev). */
+const DEPTH = -4;
+
+/** Trim the forearm: below START (fraction of model height) is cut; up to END it fades in. */
+const CUT = { start: 0.32, end: 0.46 };
 
 /** Index of the stop where the navy wipe has just covered the screen. */
 const DARK_STOP = 5;
@@ -99,7 +109,8 @@ export function HandModel({ className = '' }: { className?: string }) {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 50);
     camera.position.set(0, 0, 7);
-    const visibleH = 2 * camera.position.z * Math.tan(deg(camera.fov / 2));
+    const visibleH = 2 * (camera.position.z - DEPTH) * Math.tan(deg(camera.fov / 2));
+    scene.fog = new THREE.Fog(0xe6f4fd, 8, 24); // haze toward the page colour for depth
 
     const ambient = new THREE.HemisphereLight(0xffffff, LOOKS.light.ground, 0.9);
     scene.add(ambient);
@@ -110,7 +121,21 @@ export function HandModel({ className = '' }: { className?: string }) {
     rim.position.set(4, -1, -3);
     scene.add(rim);
 
-    const material = new THREE.MeshStandardMaterial();
+    // Forearm trim: discard below the cut and fade alpha above it, in the mesh's own space.
+    const cutUniforms = { uCutStart: { value: 0 }, uCutEnd: { value: 0 } };
+    const material = new THREE.MeshStandardMaterial({ transparent: true });
+    material.onBeforeCompile = (shader) => {
+      Object.assign(shader.uniforms, cutUniforms);
+      shader.vertexShader = shader.vertexShader
+        .replace('#include <common>', '#include <common>\nvarying float vLocalY;')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvLocalY = position.y;');
+      shader.fragmentShader = shader.fragmentShader
+        .replace('#include <common>', '#include <common>\nvarying float vLocalY;\nuniform float uCutStart;\nuniform float uCutEnd;')
+        .replace(
+          '#include <dithering_fragment>',
+          '#include <dithering_fragment>\nif (vLocalY < uCutStart) discard;\ngl_FragColor.a *= smoothstep(uCutStart, uCutEnd, vLocalY);',
+        );
+    };
 
     // rig = scroll pose; floater = idle drift (drei <Float> on lenis.dev); model normalised to 1 unit tall.
     const rig = new THREE.Group();
@@ -129,6 +154,11 @@ export function HandModel({ className = '' }: { className?: string }) {
         model.traverse((obj) => {
           if (obj instanceof THREE.Mesh) {
             obj.geometry.computeVertexNormals();
+            obj.geometry.computeBoundingBox();
+            const { min, max } = obj.geometry.boundingBox!;
+            const span = max.y - min.y;
+            cutUniforms.uCutStart.value = min.y + span * CUT.start;
+            cutUniforms.uCutEnd.value = min.y + span * CUT.end;
             obj.material = material;
           }
         });
@@ -178,6 +208,7 @@ export function HandModel({ className = '' }: { className?: string }) {
       material.roughness = look.roughness;
       key.color.setHex(look.key);
       ambient.groundColor.setHex(look.ground);
+      (scene.fog as THREE.Fog).color.setHex(isDark ? 0x0a1378 : 0xe6f4fd);
       document.documentElement.dataset.scene = isDark ? 'dark' : 'light';
     };
 
@@ -212,7 +243,7 @@ export function HandModel({ className = '' }: { className?: string }) {
 
       const pose = poseAt(scroll);
       const visibleW = visibleH * camera.aspect;
-      rig.position.set(pose.position[0] * visibleW, pose.position[1] * visibleH, 0);
+      rig.position.set(pose.position[0] * visibleW, pose.position[1] * visibleH, DEPTH);
       rig.scale.setScalar(pose.scale * visibleH);
       rig.rotation.set(
         pose.rotation[0] + (reducedMotion ? 0 : pointer.y * 0.08),
