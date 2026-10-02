@@ -7,7 +7,7 @@ interface PricingSectionProps {
 
 export function PricingSection({ onOpenEstimator }: PricingSectionProps) {
   return (
-    <section id="pricing" data-theme="dark" className="dr-pb-160 dt:dr-pb-240 relative bg-primary">
+    <section id="pricing" data-theme="dark" className="dr-pb-160 dt:dr-pb-240 relative">
       <div className="layout-grid dr-mb-48 dt:dr-mb-80">
         <h2 className="h2 col-span-full dt:col-[1/span_6]">Engagements</h2>
         <p className="p dr-mt-24 col-span-full self-end dt:col-[7/span_4] dt:mt-0">

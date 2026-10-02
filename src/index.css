@@ -465,6 +465,25 @@
     transform: none;
   }
 
+  /* ── Scene background (switched by HandModel at the end of the navy wipe) ── */
+  .scene-bg {
+    background: var(--color-sky);
+  }
+
+  .scene-bloom {
+    opacity: 0.8;
+    transition: opacity 0.6s var(--ease-out-expo);
+  }
+
+  html[data-scene="dark"],
+  html[data-scene="dark"] .scene-bg {
+    background: var(--color-navy);
+  }
+
+  html[data-scene="dark"] .scene-bloom {
+    opacity: 0;
+  }
+
   /* ── Brand mark placement ─────────────────────────
      Visible artwork ratio is 358.5 : 64.8, so H = 0.18075W. Sizing the mark to
      100vw / 1.1808 leaves exactly 0.5H clear on both sides (brand guide p.12).

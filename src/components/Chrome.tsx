@@ -62,12 +62,15 @@ export function ScrollProgressBar() {
   );
 }
 
-/** Fixed Open Sky field with a soft light bloom and the 3D hand rising from below. */
+/**
+ * Fixed scene behind the whole page (lenis.dev's canvas): Open Sky with a soft bloom, switching
+ * to Deep Navy once the zoom wipe completes. The hand travels through it as you scroll.
+ */
 export function Background() {
   return (
-    <div aria-hidden="true" className="pointer-events-none fixed inset-x-0 top-0 h-screen overflow-hidden bg-sky">
-      <div className="absolute top-0 left-1/2 h-[100vw] w-[200vw] -translate-x-1/2 translate-y-[45vh] bg-[radial-gradient(var(--color-white),transparent_60%)] opacity-80" />
-      <HandModel className="absolute inset-0 [mask-image:linear-gradient(to_bottom,#000_52%,transparent_72%)] dt:[mask-image:none]" />
+    <div aria-hidden="true" className="scene-bg pointer-events-none fixed inset-x-0 top-0 h-screen overflow-hidden">
+      <div className="scene-bloom absolute top-0 left-1/2 h-[100vw] w-[200vw] -translate-x-1/2 translate-y-[45vh] bg-[radial-gradient(var(--color-white),transparent_60%)]" />
+      <HandModel className="absolute inset-0" />
     </div>
   );
 }

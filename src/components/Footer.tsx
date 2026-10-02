@@ -15,7 +15,7 @@ export function Footer({ onOpenEstimator }: FooterProps) {
   return (
     <footer
       data-theme="dark"
-      className="dr-pb-20 dt:dr-pt-60 relative z-1 flex min-h-svh flex-col justify-between bg-primary pt-[calc(var(--safe)+var(--header-height))]"
+      className="dr-pb-20 dt:dr-pt-60 relative z-1 flex min-h-svh flex-col justify-between pt-[calc(var(--safe)+var(--header-height))]"
     >
       <div className="layout-grid dr-pb-40 dr-gap-y-32 grow grid-rows-[1fr_auto]">
         <p className="h1 col-span-full self-start dt:text-[length:calc(128*100/816*1vh)]">

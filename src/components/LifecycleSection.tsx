@@ -17,7 +17,7 @@ export function LifecycleSection({ onOpenEstimator }: LifecycleSectionProps) {
   });
 
   return (
-    <section id="approach" data-theme="dark" className="dr-pb-160 dt:dr-pt-40 relative bg-primary">
+    <section id="approach" data-theme="dark" className="dr-pb-160 dt:dr-pt-40 relative">
       <div className="layout-block dr-pt-80 dr-mb-160 dt:dr-mb-440">
         <p className="p-l">
           {BRAND.name} is an <span className="contrast semi-bold">{BRAND.descriptor}</span>. We combine AI engineering,
@@ -37,7 +37,7 @@ export function LifecycleSection({ onOpenEstimator }: LifecycleSectionProps) {
         </p>
       </div>
 
-      <div ref={pinRef} className="h-[300vh] dt:h-[500vh]">
+      <div ref={pinRef} id="approach-cards" className="h-[300vh] dt:h-[500vh]">
         <div className="layout-block sticky top-0 h-svh overflow-hidden p-(--safe) pt-[calc(var(--safe)+var(--header-height))] dt:h-screen">
           <div className="pb-(--safe) text-end dt:absolute dt:right-(--safe) dt:p-0">
             <p className="h3">
