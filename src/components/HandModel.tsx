@@ -20,7 +20,7 @@ interface Pose {
 /**
  * One pose per scroll stop, in page order (mirrors lenis.dev's arm keyframes). Scale is the
  * full model's height; only the hand, wrist and a fading stub of forearm are drawn (see CUT),
- * so the visible part is about 0.68 × scale, kept small and distant like lenis.dev.
+ * so the visible part is about 0.85 × scale, kept small and distant like lenis.dev.
  */
 const DESKTOP_POSES: Pose[] = [
   { position: [-0.08, -0.31], scale: 0.6, rotation: [deg(8), deg(-25), deg(4)] }, // top: floating below the wordmark
@@ -44,7 +44,7 @@ const MOBILE_POSES: Pose[] = DESKTOP_POSES.map((pose, i) => ({
 const DEPTH = -4;
 
 /** Trim the forearm: below START (fraction of model height) is cut; up to END it fades in. */
-const CUT = { start: 0.32, end: 0.46 };
+const CUT = { start: 0.15, end: 0.32 };
 
 /** Index of the stop where the navy wipe has just covered the screen. */
 const DARK_STOP = 5;
