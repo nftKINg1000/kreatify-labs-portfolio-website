@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLenis } from 'lenis/react';
-import { CONTACT_EMAIL } from '../data/content';
+import { CONTACT_EMAIL, CTA } from '../data/content';
+import { ASymbol } from './ui/Logo';
 import { useScrollTo } from '../lib/scroll';
 
 interface HeaderProps {
@@ -8,14 +9,14 @@ interface HeaderProps {
 }
 
 const NAV = [
-  { label: 'Showcase', id: 'work' },
-  { label: 'Services', id: 'services' },
-  { label: 'Templates', id: 'templates' },
+  { label: 'Capabilities', id: 'capabilities' },
+  { label: 'Approach', id: 'approach' },
+  { label: 'Pricing', id: 'pricing' },
 ];
 
 export function Header({ onOpenEstimator }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [theme, setTheme] = useState<'dark' | 'light'>('light');
   const headerRef = useRef<HTMLElement>(null);
   const scrollTo = useScrollTo();
   const lenis = useLenis();
@@ -61,19 +62,22 @@ export function Header({ onOpenEstimator }: HeaderProps) {
         data-theme={menuOpen ? 'dark' : theme}
         className="layout-grid fixed inset-x-0 top-0 z-12 h-(--header-height) items-center transition-[color] duration-[600ms] ease-out-expo"
       >
-        {NAV.map((item) => (
-          <button key={item.id} onClick={() => go(item.id)} className={`${linkClass} col-span-1 justify-self-start max-dt:hidden`}>
-            {item.label}
-          </button>
-        ))}
+        <nav aria-label="Primary" className="dr-gap-40 col-[1/6] flex max-dt:hidden">
+          {NAV.map((item) => (
+            <button key={item.id} onClick={() => go(item.id)} className={linkClass}>
+              {item.label}
+            </button>
+          ))}
+        </nav>
 
         <div className="col-span-2 col-start-3 flex justify-center dt:col-span-2 dt:col-start-6">
           <button
             onClick={() => go('hero')}
-            aria-label="Kreatify — back to top"
-            className="dr-w-40 dr-h-40 dr-rounded-4 flex items-center justify-center bg-pink text-black"
+            aria-label="KreatifyLabs — back to top"
+            className="dr-w-40 dr-h-40 dr-p-8 dr-rounded-4 flex items-center justify-center bg-action transition-colors duration-[600ms]"
           >
-            <span className="font-anton dr-text-24 leading-none">K</span>
+            {/* Approved A symbol: white on navy over light sections, colour on sky over dark ones. */}
+            <ASymbol treatment={(menuOpen ? 'dark' : theme) === 'light' ? 'white' : 'color'} className="size-full" />
           </button>
         </div>
 
@@ -82,7 +86,7 @@ export function Header({ onOpenEstimator }: HeaderProps) {
             Contact
           </a>
           <button onClick={onOpenEstimator} className={linkClass}>
-            Start a project
+            {CTA.primary}
           </button>
         </div>
 
@@ -130,7 +134,7 @@ export function Header({ onOpenEstimator }: HeaderProps) {
           className="link h3 contrast"
           tabIndex={menuOpen ? 0 : -1}
         >
-          Start a project
+          {CTA.primary}
         </button>
       </nav>
     </>

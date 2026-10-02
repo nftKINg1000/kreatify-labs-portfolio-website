@@ -1,146 +1,181 @@
+/*
+  Copy follows the KreatifyLabs brand guide v1.1 and the founder-supplied company profile.
+  Rules that shape it: write "KreatifyLabs" in running text (the artwork reads KREATIFY);
+  lead with the customer's problem; no invented clients, results, awards or testimonials;
+  only link to work, bookings or services that exist.
+*/
+
+export const BRAND = {
+  name: 'KreatifyLabs',
+  descriptor: 'AI Product & Creative Technology Studio',
+  descriptorLines: ['AI Product &', 'Creative Technology Studio'],
+  headline: ['Intelligence,', 'made useful.'],
+  signature: ['We design.', 'We build.', 'We automate.'],
+  oneLiner:
+    'KreatifyLabs designs, engineers and automates intelligent digital products for founders, startups and growth-focused businesses.',
+};
+
 export const CONTACT_EMAIL = 'hello@kreatifylabs.com';
 
-export interface Project {
-  id: string;
-  title: string;
-  category: string;
-  client: string;
-  year: string;
-  description: string;
-  tags: string[];
-  color: string;
-}
+export const CTA = {
+  primary: 'Discuss your product',
+  secondary: 'Explore our capabilities',
+  technical: 'Review your prototype',
+  automation: 'Map your workflow',
+};
 
-export const PROJECTS: Project[] = [
-  {
-    id: 'netflix',
-    title: 'Netflix Brand Experience',
-    category: 'Web Experience',
-    client: 'Netflix',
-    year: '2026',
-    description:
-      'Immersive brand storytelling with parallax scroll sequences, custom video transitions, and a fully responsive narrative flow that adapts beautifully across all devices.',
-    tags: ['React', 'Next.js', 'Lenis', 'Framer Motion'],
-    color: '#e50914',
-  },
-  {
-    id: 'mclaren',
-    title: 'McLaren Racing Hub',
-    category: 'Interactive Platform',
-    client: 'McLaren F1',
-    year: '2026',
-    description:
-      'A high-performance platform displaying live telemetry, race results, and driver statistics with buttery-smooth scroll interactions and real-time data streaming.',
-    tags: ['TypeScript', 'WebSockets', 'Canvas', 'Lenis'],
-    color: '#ff8000',
-  },
-  {
-    id: 'studio-void',
-    title: 'Architectural Portfolio',
-    category: 'Portfolio',
-    client: 'Studio Void',
-    year: '2025',
-    description:
-      'A refined portfolio showcasing architectural photography and blueprints through orchestrated scroll sequences, GSAP-powered transitions, and an editorial type system.',
-    tags: ['Next.js', 'GSAP', 'Lenis', 'Prismic CMS'],
-    color: '#8b5cf6',
-  },
-  {
-    id: 'quantum',
-    title: 'Quantum Finance Dashboard',
-    category: 'Web Application',
-    client: 'Quantum Finance',
-    year: '2025',
-    description:
-      'A data-rich financial dashboard handling millions of data points, with custom chart components, keyboard shortcuts, role-based access, and a premium dark interface.',
-    tags: ['React', 'Recharts', 'Tailwind', 'PostgreSQL'],
-    color: '#06b6d4',
-  },
-  {
-    id: 'maison-lumiere',
-    title: 'Maison Lumière Lookbook',
-    category: 'E-Commerce',
-    client: 'Maison Lumière',
-    year: '2026',
-    description:
-      'A luxury fashion storefront blending editorial photography with intuitive product discovery and a checkout flow as refined as the brand itself.',
-    tags: ['Next.js', 'Shopify', 'Lenis', 'Framer Motion'],
-    color: '#ec4899',
-  },
-  {
-    id: 'pulse',
-    title: 'Pulse Health Platform',
-    category: 'Mobile & Web',
-    client: 'Pulse Medtech',
-    year: '2025',
-    description:
-      'A cross-platform health ecosystem connecting wearables with a web dashboard and native app, offering personalised insights powered by machine learning.',
-    tags: ['React Native', 'Next.js', 'AI/ML', 'HealthKit'],
-    color: '#10b981',
-  },
-];
-
+/** "Who we serve" — brand guide p.4, the customer need comes first. */
 export const WHY = {
   intro:
-    'Most websites look the same and feel worse. We design and build web experiences that move with intent — fast, accessible, and remembered long after the first scroll.',
+    'KreatifyLabs works with businesses that need technology to solve a real operational or product problem, not technology for its own sake. We connect product thinking, full-stack development, creative technology and AI around your business goal.',
   points: [
     {
-      title: 'Design that earns attention',
-      body: 'Editorial layouts, bold typography, and art direction that gives your brand a point of view instead of another template.',
+      title: 'Founders validating a product',
+      body: 'A credible route from idea to MVP: discovery, architecture, prototyping and a scoped launch. We show decisions, assumptions and acceptance criteria before we promise speed.',
     },
     {
-      title: 'Motion with purpose',
-      body: 'Scroll-driven sequences, page transitions, and micro-interactions built on Lenis and GSAP — every movement guides the eye, none of it gets in the way.',
+      title: 'Startups evolving a prototype',
+      body: 'Dependable architecture beyond the demo: AI-assisted app migration, security review, data models, testing and production hardening.',
     },
     {
-      title: 'Engineered for speed',
-      body: 'React, Next.js, and TypeScript with performance budgets from day one. Smooth on a flagship phone, still smooth on a five-year-old laptop.',
+      title: 'Businesses improving operations',
+      body: 'Fewer manual steps and reliable workflows: integrations, automation, audit trails and human approvals, measured against an agreed baseline.',
     },
     {
-      title: 'Systems that scale',
-      body: 'Design tokens and component libraries that keep every new page consistent, so your team can ship without calling us for every change.',
+      title: 'How we behave',
+      body: 'Useful before novel. Clear before complex. Responsible about automation. Accountable for delivery.',
     },
   ],
 };
 
-export const SERVICES = [
-  'Strategy & art direction',
-  'Design systems & UI kits',
-  'Smooth scroll & motion',
-  'WebGL & 3D experiences',
-  'Headless CMS & commerce',
-  'Performance & accessibility',
-  'Launch & ongoing support',
-];
-
-export interface Template {
+export interface Capability {
+  id: string;
+  index: string;
   title: string;
-  category: string;
-  description: string;
-  link: string;
+  summary: string;
+  detail: string;
+  stack: string[];
+  cta: string;
+  /** Composition of the supporting plane graphic on the card. */
+  art: 'cut' | 'plane' | 'channel';
 }
 
-export const TEMPLATES: Template[] = [
+/** Six service families — brand guide p.5. */
+export const CAPABILITIES: Capability[] = [
   {
-    title: 'Lenis React Starter',
-    category: 'Scroll library',
-    description: 'React & Next.js starter with Lenis smooth scroll, a shared RAF loop, and anchor navigation pre-configured.',
-    link: 'https://github.com/darkroomengineering/lenis',
+    id: 'product-definition',
+    index: '01',
+    title: 'Product definition',
+    summary: 'Idea validation, product development, architecture, prototypes and SaaS MVP planning.',
+    detail:
+      'We turn an idea into a scoped, testable plan: who it is for, what the first release must do, how it is built and how we will know it works. You leave with an architecture, a prototype and acceptance criteria.',
+    stack: ['Discovery', 'Architecture', 'Prototypes', 'SaaS MVP'],
+    cta: 'Discuss your product',
+    art: 'cut',
   },
   {
-    title: 'Motion Portfolio Kit',
-    category: 'Template',
-    description: 'A minimal portfolio with page transitions, scroll-driven animation, and an editorial type scale.',
-    link: '#work',
+    id: 'ai-engineering',
+    index: '02',
+    title: 'AI engineering',
+    summary: 'AI SaaS, AI products, AI agents, multi-agent systems and AI integrations.',
+    detail:
+      'An AI agent is software that can plan and take steps toward a goal using a language model. We design agents with clear permissions, visible costs and human approval before any external action.',
+    stack: ['AI SaaS', 'AI agents', 'Multi-agent systems', 'AI integrations'],
+    cta: 'Discuss your product',
+    art: 'plane',
   },
   {
-    title: 'Design System UI Kit',
-    category: 'UI kit',
-    description: 'Accessible React components styled for dark interfaces — buttons, cards, modals, and form elements.',
-    link: '#services',
+    id: 'product-engineering',
+    index: '03',
+    title: 'Product engineering',
+    summary: 'Full-stack web applications, mobile apps, backend systems, authentication and databases.',
+    detail:
+      'From UI engineering to backend services, databases and authentication, we build products that are maintainable after launch, not just impressive in a demo.',
+    stack: ['React', 'Next.js', 'Node.js', 'PostgreSQL', 'Flutter'],
+    cta: 'Discuss your product',
+    art: 'channel',
+  },
+  {
+    id: 'business-automation',
+    index: '04',
+    title: 'Business automation',
+    summary: 'AI and process automation, n8n workflows, APIs and third-party platform integrations.',
+    detail:
+      'We map the workflow before choosing the tools, then automate the repetitive steps with integrations, audit trails and a human check where it matters.',
+    stack: ['n8n', 'APIs', 'Integrations', 'Process automation'],
+    cta: 'Map your workflow',
+    art: 'plane',
+  },
+  {
+    id: 'creative-technology',
+    index: '05',
+    title: 'Creative technology',
+    summary: 'Interactive 3D websites, Three.js, WebGL, immersive experiences and purposeful GSAP motion.',
+    detail:
+      'Spatial, interactive experiences that still read clearly without the effects. We budget geometry for the target device, respect reduced motion and always ship a fallback.',
+    stack: ['Three.js', 'WebGL', 'GSAP', 'Interactive 3D'],
+    cta: 'Discuss your product',
+    art: 'cut',
+  },
+  {
+    id: 'production-evolution',
+    index: '06',
+    title: 'Production evolution',
+    summary:
+      'Vibe-coded application development, prototype migration, optimisation, hardening, cloud infrastructure and deployment.',
+    detail:
+      'We take applications built with AI-assisted and vibe-coding platforms and turn them into robust production systems with stronger architecture, security, scalability and performance.',
+    stack: ['Prototype migration', 'Hardening', 'Cloud', 'Deployment'],
+    cta: 'Review your prototype',
+    art: 'channel',
   },
 ];
 
+/** Lifecycle — brand guide p.5: Define > Design > Engineer > Validate > Deploy > Evolve. */
+export const LIFECYCLE = [
+  { step: 'Define', body: 'Validate the idea, the users and the business case.' },
+  { step: 'Design', body: 'Shape the product, the flows and the interface.' },
+  { step: 'Engineer', body: 'Build the frontend, backend, data and AI layers.' },
+  { step: 'Validate', body: 'Test against the acceptance checks we agreed.' },
+  { step: 'Deploy', body: 'Ship to production with monitoring in place.' },
+  { step: 'Evolve', body: 'Optimise, harden and extend as you grow.' },
+];
+
+/** Full capability list supplied by the founder — brand guide p.31. */
+export const CAPABILITY_LIST = [
+  'AI SaaS development',
+  'AI product development',
+  'AI agents and multi-agent systems',
+  'Full-stack web application development',
+  'Mobile app development',
+  'AI and business process automation',
+  'Interactive 3D website development',
+  'Three.js, WebGL and immersive web experiences',
+  'API and third-party platform integrations',
+  'SaaS MVP development',
+  'Backend systems and database architecture',
+  'Vibe-coded application development',
+  'Prototype-to-production migration',
+  'Application optimisation and production hardening',
+  'Cloud deployment and infrastructure',
+];
+
+export const TECH_STACK = [
+  'React',
+  'Next.js',
+  'TypeScript',
+  'Node.js',
+  'Supabase',
+  'Firebase',
+  'PostgreSQL',
+  'Three.js',
+  'WebGL',
+  'GSAP',
+  'Flutter',
+  'n8n',
+];
+
+/** The studio's own tiers, prices and inclusions; only casing changed (brand voice: sentence case). */
 export const PRICING = [
   {
     label: 'Project',
@@ -154,8 +189,8 @@ export const PRICING = [
     label: 'Product',
     price: '$9,800',
     suffix: '/ project',
-    description: 'A custom web application with design system, animation, and CMS integration.',
-    features: ['Custom design system', 'Advanced animation', 'CMS integration', 'Performance audit', '30-day support'],
+    description: 'A full custom web application with design system, animations and CMS integration.',
+    features: ['Custom design system', 'Advanced animations', 'CMS integration', 'Performance audit', '30-day support'],
     highlighted: true,
   },
   {
@@ -168,9 +203,10 @@ export const PRICING = [
   },
 ];
 
+/** The studio's original estimator items and prices (unchanged amounts). */
 export const ESTIMATOR_SERVICES = [
-  { id: 'web-dev', name: 'Web development', price: 3500 },
-  { id: 'motion', name: 'Motion & interaction design', price: 2500 },
+  { id: 'web-dev', name: 'Web application development', price: 3500 },
+  { id: 'motion', name: 'Creative technology & motion', price: 2500 },
   { id: 'design-system', name: 'Design system', price: 3000 },
   { id: 'full-app', name: 'Full-stack application', price: 5000 },
   { id: 'mobile', name: 'Mobile application', price: 5500 },

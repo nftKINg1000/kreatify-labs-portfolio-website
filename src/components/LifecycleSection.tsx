@@ -1,36 +1,37 @@
 import { useRef, useState, type CSSProperties } from 'react';
-import { CONTACT_EMAIL, SERVICES } from '../data/content';
+import { BRAND, CONTACT_EMAIL, CTA, LIFECYCLE } from '../data/content';
 import { clamp, useScrollProgress } from '../lib/scroll';
 
-interface CraftSectionProps {
+interface LifecycleSectionProps {
   onOpenEstimator: () => void;
 }
 
-export function CraftSection({ onOpenEstimator }: CraftSectionProps) {
+/** Boilerplate statement, then the six lifecycle stages stacking in as you scroll (lenis.dev "Lenis brings the heat"). */
+export function LifecycleSection({ onOpenEstimator }: LifecycleSectionProps) {
   const pinRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(1);
 
   useScrollProgress(pinRef, (progress) => {
-    const next = clamp(Math.floor(progress * SERVICES.length) + 1, 1, SERVICES.length);
+    const next = clamp(Math.floor(progress * LIFECYCLE.length) + 1, 1, LIFECYCLE.length);
     setVisible((current) => (current === next ? current : next));
   });
 
   return (
-    <section id="services" data-theme="light" className="dr-pb-160 dt:dr-pt-40 relative bg-primary">
+    <section id="approach" data-theme="dark" className="dr-pb-160 dt:dr-pt-40 relative bg-primary">
       <div className="layout-block dr-pt-80 dr-mb-160 dt:dr-mb-440">
         <p className="p-l">
-          Kreatify is an independent, <span className="contrast semi-bold">design-driven studio</span> that turns
-          ambitious ideas into <span className="contrast semi-bold">fast, fluid web experiences</span> — from first
-          sketch to launch. We sweat the details so your users feel them.
+          {BRAND.name} is an <span className="contrast semi-bold">{BRAND.descriptor}</span>. We combine AI engineering,
+          full-stack development, creative technology and automation to turn ideas and complex business problems into{' '}
+          <span className="contrast semi-bold">production-ready digital systems</span>.
         </p>
         <p className="p dr-mt-48 dt:dr-mt-64">
-          Have a project in mind?{' '}
+          Have an idea, a prototype or a manual process?{' '}
           <button onClick={onOpenEstimator} className="link contrast semi-bold">
-            Start a project
+            {CTA.primary}
           </button>{' '}
           or{' '}
-          <a href={`mailto:${CONTACT_EMAIL}`} className="link contrast semi-bold">
-            say hello
+          <a href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Map our workflow')}`} className="link contrast semi-bold">
+            {CTA.automation.toLowerCase()}
           </a>
           .
         </p>
@@ -40,27 +41,30 @@ export function CraftSection({ onOpenEstimator }: CraftSectionProps) {
         <div className="layout-block sticky top-0 h-svh overflow-hidden p-(--safe) pt-[calc(var(--safe)+var(--header-height))] dt:h-screen">
           <div className="pb-(--safe) text-end dt:absolute dt:right-(--safe) dt:p-0">
             <p className="h3">
-              Kreatify brings
+              From idea
               <br />
-              <span className="grey">the details</span>
+              <span className="muted">to production</span>
             </p>
           </div>
 
           <ol
             className="relative [--card:calc(343*var(--px))] dt:[--card:calc(4*var(--column-width)+3*var(--gap))]"
-            style={{ '--count': SERVICES.length } as CSSProperties}
+            style={{ '--count': LIFECYCLE.length } as CSSProperties}
           >
-            {SERVICES.map((service, i) => (
+            {LIFECYCLE.map((stage, i) => (
               <li
-                key={service}
+                key={stage.step}
                 style={{ '--i': i } as CSSProperties}
                 className={`absolute top-[calc(((100svh-var(--header-height)-var(--card)-var(--safe)-4*var(--safe))/(var(--count)-1))*var(--i))] transition-[opacity,translate] duration-[1200ms] ease-out-expo will-change-transform dt:top-[calc(((100vh-var(--header-height)-var(--card)-2*var(--safe))/(var(--count)-1))*var(--i))] dt:left-[calc(((100vw-var(--card)-2*var(--safe))/(var(--count)-1))*var(--i))] ${
                   i < visible ? 'translate-0 opacity-100' : 'translate-full opacity-0'
                 }`}
               >
-                <div className="dr-p-24 flex aspect-square w-(--card) flex-col justify-between border border-current bg-[color-mix(in_oklab,var(--theme-primary)_70%,transparent)] backdrop-blur-[5px]">
-                  <p className="h2 contrast">{String(i + 1).padStart(2, '0')}</p>
-                  <p className="h4">{service}</p>
+                <div className="dr-p-24 flex aspect-square w-(--card) flex-col justify-between border border-sky/40 bg-[color-mix(in_oklab,var(--color-navy)_80%,transparent)] backdrop-blur-[5px]">
+                  <p className="h2">{String(i + 1).padStart(2, '0')}</p>
+                  <div>
+                    <p className="h4">{stage.step}</p>
+                    <p className="p-r dr-mt-12 muted">{stage.body}</p>
+                  </div>
                 </div>
               </li>
             ))}

@@ -1,34 +1,44 @@
 import { useEffect, useState } from 'react';
 import { ReactLenis, useLenis } from 'lenis/react';
-import { Background, Loader, ScrollProgressBar } from './components/Chrome';
+import { Background, Intro, ScrollProgressBar, type IntroPhase } from './components/Chrome';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { WhySection } from './components/WhySection';
-import { WorkShowcase } from './components/WorkShowcase';
+import { CapabilitiesShowcase } from './components/CapabilitiesShowcase';
 import { ZoomSection } from './components/ZoomSection';
-import { CraftSection } from './components/CraftSection';
-import { TemplatesShowcase } from './components/TemplatesShowcase';
+import { LifecycleSection } from './components/LifecycleSection';
+import { CapabilityList } from './components/CapabilityList';
 import { PricingSection } from './components/PricingSection';
 import { Footer } from './components/Footer';
 import { ProjectEstimatorModal } from './components/ProjectEstimatorModal';
 
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 function Site() {
-  const [loaded, setLoaded] = useState(false);
+  // Reduced motion skips the intro entirely.
+  const [phase, setPhase] = useState<IntroPhase>(() =>
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'done' : 'idle',
+  );
   const [estimatorOpen, setEstimatorOpen] = useState(false);
   const lenis = useLenis();
 
-  // Hold the curtain until the display fonts are in (so nothing reflows under it),
-  // but never longer than 2.5s — a slow font must not leave visitors stuck on pink.
+  // Intro timeline (lenis.dev): rise once fonts are ready (capped at 2.5s), hold, then lift.
   useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     let cancelled = false;
-    const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-    Promise.race([Promise.all([document.fonts.ready, wait(900)]), wait(2500)]).then(() => {
-      if (!cancelled) setLoaded(true);
-    });
+    (async () => {
+      await Promise.race([Promise.all([document.fonts.ready, wait(400)]), wait(2500)]);
+      if (cancelled) return;
+      setPhase('in');
+      await wait(1500);
+      if (!cancelled) setPhase('out');
+    })();
     return () => {
       cancelled = true;
     };
   }, []);
+
+  const loaded = phase === 'out' || phase === 'done';
 
   useEffect(() => {
     if (!lenis) return;
@@ -39,8 +49,8 @@ function Site() {
   const openEstimator = () => setEstimatorOpen(true);
 
   return (
-    <div data-theme="dark" className={`flex min-h-screen flex-col ${loaded ? 'is-loaded' : ''}`}>
-      <Loader loaded={loaded} />
+    <div data-theme="light" className={`flex min-h-screen flex-col ${loaded ? 'is-loaded' : ''}`}>
+      <Intro phase={phase} onDone={() => setPhase('done')} />
       <ScrollProgressBar />
       <Background />
       <Header onOpenEstimator={openEstimator} />
@@ -48,10 +58,10 @@ function Site() {
       <main className="relative z-1 grow">
         <Hero onOpenEstimator={openEstimator} />
         <WhySection />
-        <WorkShowcase onOpenEstimator={openEstimator} />
+        <CapabilitiesShowcase onOpenEstimator={openEstimator} />
         <ZoomSection />
-        <CraftSection onOpenEstimator={openEstimator} />
-        <TemplatesShowcase />
+        <LifecycleSection onOpenEstimator={openEstimator} />
+        <CapabilityList />
         <PricingSection onOpenEstimator={openEstimator} />
       </main>
 

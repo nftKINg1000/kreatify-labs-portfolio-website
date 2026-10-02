@@ -2,8 +2,10 @@
 @import "lenis/dist/lenis.css";
 
 /*
-  Design system modelled on lenis.dev:
-  every size is authored in design pixels and scaled to the viewport
+  Layout, type scale and motion modelled on lenis.dev; colour from the
+  KreatifyLabs brand guide v1.1 (Deep Navy leads, Signal Red is a small
+  accent, Open Sky is the signature light field).
+  Every size is authored in design pixels and scaled to the viewport
   (375px wide on mobile, 1440px wide on desktop) via --px.
 */
 
@@ -22,10 +24,15 @@
   --font-panchang: "Panchang", "Anton", sans-serif;
   --font-roboto: "Roboto", system-ui, sans-serif;
 
-  --color-black: #000;
-  --color-white: #efefef;
-  --color-grey: #b0b0b0;
-  --color-pink: #ff98a2;
+  /* Brand tokens (sampled from the approved logo; see brand guide p.14). */
+  --color-navy: #0a1378;
+  --color-signal: #a0030e;
+  --color-sky: #e6f4fd;
+  --color-ink: #101b2b;
+  --color-slate: #526478;
+  --color-mist: #c8d8e5;
+  --color-paper: #f7fafc;
+  --color-white: #ffffff;
 
   --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
   --ease-in-out-quad: cubic-bezier(0.455, 0.03, 0.515, 0.955);
@@ -36,6 +43,9 @@
   --color-primary: var(--theme-primary);
   --color-secondary: var(--theme-secondary);
   --color-contrast: var(--theme-contrast);
+  --color-muted: var(--theme-muted);
+  --color-action: var(--theme-action);
+  --color-on-action: var(--theme-on-action);
 }
 
 :root {
@@ -58,34 +68,34 @@
 }
 
 @layer base {
-  [data-theme="dark"] {
-    --theme-primary: #000;
-    --theme-secondary: #efefef;
-    --theme-contrast: #ff98a2;
-    --theme-primary-transparent: #0000;
-    color: var(--theme-secondary);
-  }
-
+  /*
+    Contrast (brand guide p.15): Navy/Sky 13.6:1, Red/Sky 7.5:1, Slate/Sky ≈5.5:1,
+    Sky/Navy 13.6:1, Mist/Navy ≈10:1. Red is never used as text on Navy or Ink.
+  */
   [data-theme="light"] {
-    --theme-primary: #efefef;
-    --theme-secondary: #000;
-    --theme-contrast: #ff98a2;
-    --theme-primary-transparent: #efefef00;
+    --theme-primary: var(--color-sky);
+    --theme-secondary: var(--color-navy);
+    --theme-contrast: var(--color-signal);
+    --theme-muted: var(--color-slate);
+    --theme-action: var(--color-navy);
+    --theme-on-action: var(--color-white);
     color: var(--theme-secondary);
   }
 
-  [data-theme="contrast"] {
-    --theme-primary: #ff98a2;
-    --theme-secondary: #000;
-    --theme-contrast: #efefef;
-    --theme-primary-transparent: #ff98a200;
+  [data-theme="dark"] {
+    --theme-primary: var(--color-navy);
+    --theme-secondary: var(--color-sky);
+    --theme-contrast: var(--color-white);
+    --theme-muted: var(--color-mist);
+    --theme-action: var(--color-sky);
+    --theme-on-action: var(--color-navy);
     color: var(--theme-secondary);
   }
 
   /* ── Base ─────────────────────────────────────────── */
   html {
-    background: #000;
-    color: #efefef;
+    background: var(--color-sky);
+    color: var(--color-navy);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-size-adjust: 100%;
@@ -100,8 +110,8 @@
   }
 
   ::selection {
-    background: var(--color-pink);
-    color: #000;
+    background: var(--color-navy);
+    color: var(--color-white);
   }
 
   a {
@@ -124,6 +134,7 @@
 @utility dr-pr-* { padding-right: calc(--value(integer) * var(--px)); }
 @utility dr-mt-* { margin-top: calc(--value(integer) * var(--px)); }
 @utility dr-mb-* { margin-bottom: calc(--value(integer) * var(--px)); }
+@utility dr-mr-* { margin-right: calc(--value(integer) * var(--px)); }
 @utility dr-gap-* { gap: calc(--value(integer) * var(--px)); }
 @utility dr-gap-y-* { row-gap: calc(--value(integer) * var(--px)); }
 @utility dr-w-* { width: calc(--value(integer) * var(--px)); }
@@ -248,8 +259,25 @@
     .p-s { line-height: 114%; }
   }
 
+  /* Light fields: Signal Red words. Dark fields: a bounded Open Sky plaque, since red fails on navy. */
   .contrast { color: var(--theme-contrast); }
-  .grey { color: var(--color-grey); }
+
+  [data-theme="dark"] .contrast {
+    color: var(--color-navy);
+    background: var(--color-sky);
+    padding-inline: 0.08em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+
+  /* On display type, hug the glyphs so the plaque never overlaps the line above. */
+  [data-theme="dark"] :is(.h1, .h2, .h3) .contrast {
+    display: inline-block;
+    line-height: 0.9;
+    padding: 0.06em 0.1em 0;
+  }
+
+  .muted { color: var(--theme-muted); }
   .semi-bold { font-weight: 600; }
 
   code {
@@ -289,7 +317,7 @@
     overflow: hidden;
     min-height: calc(48 * var(--px));
     border-radius: calc(12 * var(--px));
-    color: #000;
+    color: var(--theme-on-action);
     text-align: center;
     user-select: none;
   }
@@ -302,19 +330,19 @@
   }
 
   .cta-button::before {
-    background: var(--theme-contrast);
+    background: var(--theme-action);
   }
 
   .cta-button::after {
     z-index: 0;
-    background: var(--theme-secondary);
+    background: var(--color-signal);
     transform-origin: top;
     transform: scaleY(0);
     transition: transform 0.6s var(--ease-out-expo);
   }
 
   .cta-button:hover {
-    color: var(--theme-primary);
+    color: var(--color-white);
   }
 
   .cta-button:hover::after {
@@ -330,7 +358,7 @@
     aspect-ratio: 1;
     width: calc(48 * var(--px));
     padding: calc(12 * var(--px));
-    border: 1px solid var(--color-pink);
+    border: 1px solid var(--theme-action);
     border-radius: calc(12 * var(--px));
     background: var(--theme-primary);
     color: var(--theme-secondary);
@@ -338,7 +366,14 @@
   }
 
   .cta-button:hover .cta-button-icon {
-    border-color: var(--theme-secondary);
+    border-color: var(--color-signal);
+  }
+
+  .cta-button:focus-visible,
+  button:focus-visible,
+  a:focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 3px;
   }
 
   .cta-button-icon svg {
@@ -428,6 +463,71 @@
 
   .is-loaded .grow-line {
     transform: none;
+  }
+
+  /* ── Brand mark placement ─────────────────────────
+     Visible artwork ratio is 358.5 : 64.8, so H = 0.18075W. Sizing the mark to
+     100vw / 1.1808 leaves exactly 0.5H clear on both sides (brand guide p.12).
+     The intro and the hero share this box so the hand-off is seamless. */
+  .mark-box {
+    --mark-w: calc(100vw / 1.1808);
+    --mark-h: calc(var(--mark-w) * 0.18075);
+    position: absolute;
+    top: calc(var(--header-height) + var(--mark-h) / 2);
+    left: calc((100vw - var(--mark-w)) / 2);
+    width: var(--mark-w);
+    height: var(--mark-h);
+  }
+
+  .mark-box > svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ── Intro curtain (lenis.dev choreography) ──────────
+     1. pieces rise from behind a mask, staggered by --index (75ms apart)
+     2. the curtain lifts while its contents counter-move, so the mark holds still
+        and the hero's colour mark is revealed in the same place. */
+  .intro {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    overflow: hidden;
+    background: var(--color-navy);
+  }
+
+  .intro-inner {
+    position: absolute;
+    inset: 0;
+  }
+
+  .intro-mask {
+    overflow: hidden;
+  }
+
+  .intro-piece {
+    display: block;
+    translate: 0 calc(var(--index, 0) * 5% + 100%);
+  }
+
+  .intro.is-in .intro-piece {
+    translate: 0 0;
+    transition: translate 1.5s var(--ease-out-expo) calc(var(--index, 0) * 75ms);
+  }
+
+  .intro.is-out,
+  .intro.is-out .intro-inner {
+    transition: translate 1.5s var(--ease-out-expo);
+  }
+
+  .intro.is-out {
+    translate: 0 -100%;
+    pointer-events: none;
+  }
+
+  .intro.is-out .intro-inner {
+    translate: 0 100%;
   }
 
   @media (prefers-reduced-motion: reduce) {

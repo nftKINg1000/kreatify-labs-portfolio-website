@@ -1,6 +1,7 @@
-import { CONTACT_EMAIL } from '../data/content';
+import { BRAND, CONTACT_EMAIL, CTA } from '../data/content';
 import { useScrollTo } from '../lib/scroll';
 import { CtaButton } from './ui/CtaButton';
+import { Wordmark } from './ui/Logo';
 
 interface FooterProps {
   onOpenEstimator: () => void;
@@ -18,24 +19,26 @@ export function Footer({ onOpenEstimator }: FooterProps) {
     >
       <div className="layout-grid dr-pb-40 dr-gap-y-32 grow grid-rows-[1fr_auto]">
         <p className="h1 col-span-full self-start dt:text-[length:calc(128*100/816*1vh)]">
-          Kreatify is
+          {BRAND.headline[0]}
           <br />
-          <span className="contrast">open for projects</span>
+          <span className="contrast">{BRAND.headline[1]}</span>
         </p>
 
         <p className="h1 col-span-full self-end text-end dt:col-[4/-1] dt:row-start-2 dt:text-[length:calc(128*100/816*1vh)]">
-          Let&apos;s build
+          Let&apos;s discuss
           <br />
-          something good
+          your product
         </p>
 
         <CtaButton onClick={onOpenEstimator} className="col-span-full self-end dt:col-[1/4] dt:row-start-2">
-          Start a project
+          {CTA.primary}
         </CtaButton>
       </div>
 
       <div className="layout-block dr-gap-16 flex flex-wrap items-center justify-between">
-        <div className="dr-gap-32 flex">
+        {/* Approved white reverse wordmark on Deep Navy, above the 160px digital minimum. */}
+        <Wordmark treatment="white" className="dr-w-160 min-w-40 h-auto" />
+        <div className="dr-gap-32 flex flex-wrap">
           <a href={`mailto:${CONTACT_EMAIL}`} className="link p-xs">
             {CONTACT_EMAIL}
           </a>
@@ -43,7 +46,9 @@ export function Footer({ onOpenEstimator }: FooterProps) {
             Back to top
           </button>
         </div>
-        <p className="p-xs opacity-60">© {YEAR} Kreatify Labs</p>
+        <p className="p-xs muted">
+          © {YEAR} {BRAND.name} · {BRAND.descriptor}
+        </p>
       </div>
     </footer>
   );
