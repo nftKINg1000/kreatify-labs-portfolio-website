@@ -23,14 +23,14 @@ interface Pose {
 
 /** One pose per scroll stop, in page order. The statue turns slowly, like walking around a monument. */
 const POSES: Pose[] = [
-  { position: [0.27, -0.2], scale: 1.18, rotation: [0, deg(-28), 0] }, // hero: monumental, torch high
-  { position: [0.3, -0.08], scale: 0.95, rotation: [0, deg(10), 0] }, // audience
-  { position: [0.32, -0.02], scale: 0.66, rotation: [0, deg(60), 0] }, // capabilities
-  { position: [0.75, 0.05], scale: 0.8, rotation: [0, deg(120), 0] }, // proof: drifting out right
-  { position: [0.9, -1.3], scale: 0.9, rotation: [0, deg(160), 0] }, // approach/signature: parked off-screen
-  { position: [0.3, -1.3], scale: 0.9, rotation: [0, deg(200), 0] }, // pricing: waiting below view
-  { position: [0.37, -0.1], scale: 0.9, rotation: [0, deg(300), 0] }, // faq: rises again in navy
-  { position: [0.43, -0.08], scale: 0.8, rotation: [0, deg(332), 0] }, // end of page
+  { position: [0.24, -0.36], scale: 0.75, rotation: [0, deg(-28), 0] }, // hero: beside the headline, torch just under the wordmark
+  { position: [0.3, -0.08], scale: 0.95, rotation: [0, deg(62), 0] }, // audience
+  { position: [0.32, -0.02], scale: 0.66, rotation: [0, deg(150), 0] }, // capabilities
+  { position: [0.75, 0.05], scale: 0.8, rotation: [0, deg(220), 0] }, // proof: drifting out right
+  { position: [0.9, -1.3], scale: 0.9, rotation: [0, deg(270), 0] }, // approach/signature: parked off-screen
+  { position: [0.3, -1.3], scale: 0.9, rotation: [0, deg(300), 0] }, // pricing: waiting below view
+  { position: [0.37, -0.1], scale: 0.9, rotation: [0, deg(340), 0] }, // faq: rises again in navy
+  { position: [0.43, -0.08], scale: 0.8, rotation: [0, deg(372), 0] }, // end of page
 ];
 /** Material switches to the navy look here, while the statue is out of view. */
 const DARK_STOP = 5;
