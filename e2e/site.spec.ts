@@ -329,9 +329,10 @@ test.describe('visual regression @visual', () => {
       await page.goto('/');
       await page.evaluate(() => document.fonts.ready);
       // The sticky header overlaps the section at a scroll-dependent offset; hide it so the snapshot is stable.
-      await expect(page.locator('#pricing')).toHaveScreenshot(`pricing-${name}.png`, {
-        style: '.site-header, .skip-link { visibility: hidden !important; }',
+      await page.evaluate(() => {
+        for (const el of document.querySelectorAll<HTMLElement>('.site-header, .skip-link')) el.style.visibility = 'hidden';
       });
+      await expect(page.locator('#pricing')).toHaveScreenshot(`pricing-${name}.png`);
     });
   }
 
