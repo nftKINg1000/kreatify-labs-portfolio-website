@@ -2,82 +2,18 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KreatifyLabs — AI Product &amp; Creative Technology Studio</title>
-    <meta
-      name="description"
-      content="KreatifyLabs designs, engineers and automates intelligent digital products for founders, startups and growth-focused businesses. Intelligence, made useful."
-    />
-    <link rel="canonical" href="%VITE_SITE_URL%/" />
-    <meta name="theme-color" content="#0A1378" />
-    <meta name="color-scheme" content="light" />
-
-    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0A1378" />
+    <title>KreatifyLabs — AI Product &amp; Creative Technology Studio</title>
+    <meta name="description" content="KreatifyLabs designs, engineers and automates intelligent digital products for founders, startups and growth-focused businesses." />
 
-    <!-- Open Graph / social sharing -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="KreatifyLabs" />
-    <meta property="og:title" content="KreatifyLabs — Intelligence, made useful." />
-    <meta
-      property="og:description"
-      content="An AI Product & Creative Technology Studio. We design, engineer and automate intelligent digital products for founders, startups and growth-focused businesses."
-    />
-    <meta property="og:url" content="%VITE_SITE_URL%/" />
-    <meta property="og:image" content="%VITE_SITE_URL%/og-image.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="KREATIFY wordmark with the line Intelligence, made useful." />
-    <meta property="og:locale" content="en" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="KreatifyLabs — Intelligence, made useful." />
-    <meta name="twitter:description" content="An AI Product & Creative Technology Studio for founders, startups and growth-focused businesses." />
-    <meta name="twitter:image" content="%VITE_SITE_URL%/og-image.png" />
-
-    <!-- Only the sub-display face is preloaded: it sets the hero headline. -->
+    <!-- Lenis type stack, self-hosted: Anton + Roboto via @fontsource, Panchang (Fontshare, ITF FFL) in /public/fonts -->
     <link rel="preload" href="/fonts/panchang-700.woff2" as="font" type="font/woff2" crossorigin />
-
-    <!-- Structured data: only owner-provided, verifiable fields (no address, ratings or profiles). -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@graph": [
-          {
-            "@type": "WebSite",
-            "@id": "%VITE_SITE_URL%/#website",
-            "name": "KreatifyLabs",
-            "url": "%VITE_SITE_URL%/",
-            "inLanguage": "en",
-            "publisher": { "@id": "%VITE_SITE_URL%/#organization" }
-          },
-          {
-            "@type": "Organization",
-            "@id": "%VITE_SITE_URL%/#organization",
-            "name": "KreatifyLabs",
-            "url": "%VITE_SITE_URL%/",
-            "logo": "%VITE_SITE_URL%/brand/kreatifylabs-logo.png",
-            "email": "hello@kreatifylabs.com",
-            "slogan": "Intelligence, made useful.",
-            "description": "KreatifyLabs is an AI Product & Creative Technology Studio that designs, engineers and automates intelligent digital products for startups, founders and growth-focused businesses.",
-            "knowsAbout": [
-              "AI SaaS development",
-              "AI agents and multi-agent systems",
-              "Full-stack web application development",
-              "Mobile app development",
-              "Business process automation",
-              "Interactive 3D website development",
-              "Prototype-to-production migration",
-              "Cloud deployment and infrastructure"
-            ]
-          }
-        ]
-      }
-    </script>
+    <link rel="preload" href="/models/hand.glb" as="fetch" type="model/gltf-binary" crossorigin />
   </head>
   <body>
-    <div id="root"><!--app-html--></div>
+    <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

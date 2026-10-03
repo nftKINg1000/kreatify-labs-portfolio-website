@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'react';
+
 /*
   KREATIFY wordmark and A symbol, path data copied from the owner-approved
   v1.2 vector set (primary-color.svg / wordmark-*.svg). Do not redraw, retype,
@@ -28,22 +30,19 @@ const FILL: Record<Exclude<LogoTreatment, 'color'>, string> = { navy: NAVY, whit
 interface WordmarkProps {
   treatment?: LogoTreatment;
   className?: string;
+  /** Class applied to each glyph group, e.g. for an entrance transition. */
+  pieceClassName?: string;
   title?: string;
-  /** Hide from assistive technology when the name is already given as text nearby. */
-  decorative?: boolean;
 }
 
 /** The visible artwork is cropped to its own bounds; give it ≥0.5H clear space in layout. */
-export function Wordmark({ treatment = 'color', className = '', title = 'KreatifyLabs', decorative = false }: WordmarkProps) {
+export function Wordmark({ treatment = 'color', className = '', pieceClassName = '', title = 'KreatifyLabs' }: WordmarkProps) {
   const solid = treatment === 'color' ? NAVY : FILL[treatment];
+  const piece = (index: number) => ({ className: pieceClassName, style: { '--index': index } as CSSProperties });
 
   return (
-    <svg
-      viewBox="32.4 32.4 358.5 64.8"
-      className={className}
-      {...(decorative ? { 'aria-hidden': true, focusable: false } : { role: 'img', 'aria-label': title })}
-    >
-      <g>
+    <svg viewBox="32.4 32.4 358.5 64.8" className={className} role="img" aria-label={title}>
+      <g {...piece(0)}>
         <path fill={solid} d={LETTERS.K} />
         <path fill={solid} fillRule="evenodd" d={LETTERS.R} />
         <path fill={solid} d={LETTERS.E} />
@@ -66,7 +65,7 @@ export function Wordmark({ treatment = 'color', className = '', title = 'Kreatif
 /** The approved standalone A — the small-format signature. */
 export function ASymbol({ treatment = 'color', className = '' }: { treatment?: LogoTreatment; className?: string }) {
   return (
-    <svg viewBox="170.4 32.4 75.3 64.8" className={className} aria-hidden="true" focusable="false">
+    <svg viewBox="170.4 32.4 75.3 64.8" className={className} aria-hidden="true">
       {treatment === 'color' ? (
         <>
           <path fill={RED} d={A_LEFT} />

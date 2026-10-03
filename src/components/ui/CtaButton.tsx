@@ -1,45 +1,35 @@
-import type { MouseEvent, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { ArrowRight } from 'lucide-react';
 
-interface CtaButtonProps {
+type CtaButtonProps = {
   children: ReactNode;
   icon?: ReactNode;
   className?: string;
-  /** Destination; also the no-JavaScript fallback when `onClick` is given. */
-  href?: string;
-  onClick?: (event: MouseEvent<HTMLElement>) => void;
-  variant?: 'primary' | 'secondary';
-}
+} & ({ href: string; onClick?: never } | { onClick: () => void; href?: never });
 
-/** Call-to-action: boxed icon plus a label that rolls on hover. Renders a link when given `href`. */
-export function CtaButton({ children, icon = <ArrowRight strokeWidth={1.75} />, className = '', href, onClick, variant = 'primary' }: CtaButtonProps) {
+/** The lenis.dev call-to-action: pink pill with a boxed icon and a rolling label on hover. */
+export function CtaButton({ children, icon = <ArrowRight strokeWidth={1.5} />, className = '', href, onClick }: CtaButtonProps) {
   const content = (
     <>
-      <span className="cta-button-icon" aria-hidden="true">
-        {icon}
-      </span>
+      <span className="cta-button-icon">{icon}</span>
       <span className="cta-button-label">
         <span>{children}</span>
         <span aria-hidden="true">{children}</span>
       </span>
     </>
   );
-  const classes = `cta cta-button ${variant === 'secondary' ? 'cta-button--secondary' : ''} ${className}`;
+
+  const classes = `cta cta-button ${className}`;
 
   if (href) {
-    const external = /^https?:/.test(href);
+    const external = href.startsWith('http');
     return (
-      <a
-        href={href}
-        className={classes}
-        onClick={onClick}
-        target={external ? '_blank' : undefined}
-        rel={external ? 'noreferrer' : undefined}
-      >
+      <a href={href} className={classes} target={external ? '_blank' : undefined} rel={external ? 'noreferrer' : undefined}>
         {content}
       </a>
     );
   }
+
   return (
     <button type="button" onClick={onClick} className={classes}>
       {content}

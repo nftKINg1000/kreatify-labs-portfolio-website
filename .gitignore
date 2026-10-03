@@ -22,11 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# Test, audit and Lighthouse output
-test-results
-playwright-report
-blob-report
-.lighthouseci
-audit-results
-coverage
