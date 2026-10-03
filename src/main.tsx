@@ -1,15 +1,19 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import '@fontsource/anton'
-import '@fontsource/roboto/400.css'
-import '@fontsource/roboto/500.css'
-import '@fontsource/roboto/600.css'
-import '@fontsource/roboto/900.css'
-import './index.css'
-import App from './App.tsx'
+import { StrictMode } from 'react';
+import { createRoot, hydrateRoot } from 'react-dom/client';
+import './fonts.css';
+import './index.css';
+import App from './App.tsx';
+import { reportWebVitals } from './lib/vitals';
 
-createRoot(document.getElementById('root')!).render(
+const root = document.getElementById('root')!;
+const app = (
   <StrictMode>
     <App />
-  </StrictMode>,
-)
+  </StrictMode>
+);
+
+// The build pre-renders the page into #root; hydrate it when present.
+if (root.firstElementChild) hydrateRoot(root, app);
+else createRoot(root).render(app);
+
+reportWebVitals();

@@ -1,81 +1,63 @@
-import { useEffect, useState } from 'react';
-import { ReactLenis, useLenis } from 'lenis/react';
-import { Background, Intro, ScrollProgressBar, type IntroPhase } from './components/Chrome';
-import { Header } from './components/Header';
-import { Hero } from './components/Hero';
-import { WhySection } from './components/WhySection';
-import { CapabilitiesShowcase } from './components/CapabilitiesShowcase';
-import { ZoomSection } from './components/ZoomSection';
-import { LifecycleSection } from './components/LifecycleSection';
-import { CapabilityList } from './components/CapabilityList';
-import { PricingSection } from './components/PricingSection';
-import { Footer } from './components/Footer';
-import { ProjectEstimatorModal } from './components/ProjectEstimatorModal';
+import { lazy, Suspense, useCallback, useEffect, useState, type MouseEvent } from 'react';
+import { Footer } from './components/layout/Footer';
+import { Header } from './components/layout/Header';
+import { SceneLayer } from './components/scene/SceneLayer';
+import { Approach } from './components/sections/Approach';
+import { Audience } from './components/sections/Audience';
+import { Capabilities } from './components/sections/Capabilities';
+import { Contact } from './components/sections/Contact';
+import { Faq } from './components/sections/Faq';
+import { Hero } from './components/sections/Hero';
+import { Pricing } from './components/sections/Pricing';
+import { Proof } from './components/sections/Proof';
+import { Signature } from './components/sections/Signature';
+import { track } from './lib/analytics';
+import { onIdle } from './lib/idle';
+import { LeadContext, type OpenLead } from './lib/leadContext';
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-function Site() {
-  // Reduced motion skips the intro entirely.
-  const [phase, setPhase] = useState<IntroPhase>(() =>
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'done' : 'idle',
-  );
-  const [estimatorOpen, setEstimatorOpen] = useState(false);
-  const lenis = useLenis();
-
-  // Intro timeline (lenis.dev): rise once fonts are ready (capped at 2.5s), hold, then lift.
-  useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    let cancelled = false;
-    (async () => {
-      await Promise.race([Promise.all([document.fonts.ready, wait(400)]), wait(2500)]);
-      if (cancelled) return;
-      setPhase('in');
-      await wait(1500);
-      if (!cancelled) setPhase('out');
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const loaded = phase === 'out' || phase === 'done';
-
-  useEffect(() => {
-    if (!lenis) return;
-    if (loaded) lenis.start();
-    else lenis.stop();
-  }, [lenis, loaded]);
-
-  const openEstimator = () => setEstimatorOpen(true);
-
-  return (
-    <div data-theme="light" className={`flex min-h-screen flex-col ${loaded ? 'is-loaded' : ''}`}>
-      <Intro phase={phase} onDone={() => setPhase('done')} />
-      <ScrollProgressBar />
-      <Background />
-      <Header onOpenEstimator={openEstimator} />
-
-      <main className="relative z-1 grow">
-        <Hero onOpenEstimator={openEstimator} />
-        <WhySection />
-        <CapabilitiesShowcase onOpenEstimator={openEstimator} />
-        <ZoomSection />
-        <LifecycleSection onOpenEstimator={openEstimator} />
-        <CapabilityList />
-        <PricingSection onOpenEstimator={openEstimator} />
-      </main>
-
-      <Footer onOpenEstimator={openEstimator} />
-      <ProjectEstimatorModal isOpen={estimatorOpen} onClose={() => setEstimatorOpen(false)} />
-    </div>
-  );
-}
+const loadLeadDialog = () => import('./components/lead/LeadDialog');
+const LeadDialog = lazy(loadLeadDialog);
+const SECTIONS = [Hero, Audience, Capabilities, Proof, Approach, Signature, Pricing, Faq, Contact];
 
 export function App() {
+  const [leadOpen, setLeadOpen] = useState(false);
+  const [leadMounted, setLeadMounted] = useState(false);
+
+  // Warm the form chunk once the page is idle so the first open is instant.
+  useEffect(() => onIdle(() => void loadLeadDialog(), 4000), []);
+
+  const openLead = useCallback<OpenLead>(
+    (source) => (event?: MouseEvent<HTMLElement>) => {
+      event?.preventDefault();
+      track({ name: 'form_opened', source });
+      setLeadMounted(true);
+      setLeadOpen(true);
+    },
+    [],
+  );
+
   return (
-    <ReactLenis root options={{ lerp: 0.1, anchors: true }}>
-      <Site />
-    </ReactLenis>
+    <LeadContext.Provider value={openLead}>
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
+      <SceneLayer />
+      <Header />
+      <main id="main" tabIndex={-1}>
+        {/* Each boundary hydrates as its own interruptible task, keeping long tasks (TBT/INP) short. */}
+        {SECTIONS.map((Section, index) => (
+          <Suspense key={index} fallback={null}>
+            <Section />
+          </Suspense>
+        ))}
+      </main>
+      <Footer />
+      {leadMounted && (
+        <Suspense fallback={null}>
+          <LeadDialog open={leadOpen} onClose={() => setLeadOpen(false)} />
+        </Suspense>
+      )}
+    </LeadContext.Provider>
   );
 }
 

@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Public, non-secret build input. Override per environment in the host's settings.
+  VITE_SITE_URL: https://kreatifylabs.com
+  VITE_LEAD_ENDPOINT: /api/lead
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Dependency audit (production dependencies)
+        run: npm run audit:deps
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Unit, component and server tests
+        run: npm test
+
+      - name: Build (with pre-render)
+        run: npm run build
+      - name: Performance budgets
+        run: npm run perf:budget
+      - name: Structured data and crawl files
+        run: npm run validate:schema
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+      # Visual baselines are platform-specific and are recorded on the owner's machine,
+      # so CI runs the functional, mobile, accessibility and 3D projects only.
+      - name: End-to-end and accessibility tests
+        run: npx playwright test --project=desktop --project=mobile --project=scene
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7
+
+      - name: Lighthouse CI (mobile)
+        run: npx lhci autorun
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse
+          path: .lighthouseci
+          retention-days: 7
