@@ -45,6 +45,9 @@ const DEPTH = -4;
 /** Fade the base into the page: below START (fraction of model height) is cut; up to END it fades in. */
 const CUT = { start: 0.02, end: 0.16 };
 
+/** By the end of the page the statue is this many times its starting size, torch centred on screen. */
+const GROWTH = 3.2;
+
 /** The torch flame (top of the model) glows Signal Red. */
 const TORCH = { start: 0.955, end: 0.985, color: 0xa0030e, intensity: 2.2 };
 
@@ -185,6 +188,23 @@ export function HandModel({ className = '' }: { className?: string }) {
         const normaliser = new THREE.Group();
         normaliser.add(model);
         normaliser.scale.setScalar(1 / size.y);
+
+        // Locate the flame (the topmost vertices) in normalised space, so the end pose can centre it.
+        normaliser.updateMatrixWorld(true);
+        const point = new THREE.Vector3();
+        const top: THREE.Vector3[] = [];
+        normaliser.traverse((obj) => {
+          if (!(obj instanceof THREE.Mesh)) return;
+          const positions = obj.geometry.getAttribute('position');
+          for (let v = 0; v < positions.count; v++) {
+            point.fromBufferAttribute(positions, v).applyMatrix4(obj.matrixWorld);
+            if (point.y > 0.47) top.push(point.clone());
+          }
+        });
+        if (top.length) {
+          torch = top.reduce((sum, p) => sum.add(p), new THREE.Vector3()).divideScalar(top.length);
+        }
+
         floater.add(normaliser);
         renderer.domElement.style.opacity = '1';
       },
@@ -194,6 +214,7 @@ export function HandModel({ className = '' }: { className?: string }) {
       },
     );
 
+    let torch: THREE.Vector3 | null = null;
     let stops: number[] | null = null;
     let poses = DESKTOP_POSES;
     const layout = () => {
@@ -229,8 +250,21 @@ export function HandModel({ className = '' }: { className?: string }) {
       document.documentElement.dataset.scene = isDark ? 'dark' : 'light';
     };
 
+    /**
+     * Where the final pose must sit (in viewport fractions) for the torch to land in the centre
+     * of the screen, given the end scale and rotation. Null until the model has loaded.
+     */
+    const endPosition = (visibleW: number): [number, number] | null => {
+      if (!torch) return null;
+      const s = poses[0].scale * GROWTH * visibleH;
+      const angle = poses[poses.length - 1].rotation[1];
+      const x = s * (Math.cos(angle) * torch.x + Math.sin(angle) * torch.z);
+      const y = s * torch.y;
+      return [-x / visibleW, -y / visibleH];
+    };
+
     const blended: Pose = { position: [0, 0], scale: 1, rotation: [0, 0, 0] };
-    const poseAt = (scroll: number): Pose => {
+    const poseAt = (scroll: number, visibleW: number): Pose => {
       if (!stops) return poses[0];
       const last = stops.length - 1;
       let i = stops.findIndex((stop) => scroll < stop) - 1;
@@ -241,10 +275,16 @@ export function HandModel({ className = '' }: { className?: string }) {
       const t = span > 0 ? THREE.MathUtils.clamp((scroll - stops[i]) / span, 0, 1) : 0;
       const a = poses[i];
       const b = poses[j];
-      blended.position[0] = lerp(a.position[0], b.position[0], t);
-      blended.position[1] = lerp(a.position[1], b.position[1], t);
-      blended.scale = lerp(a.scale, b.scale, t);
+      const end = endPosition(visibleW);
+      const from = i === last && end ? end : a.position;
+      const to = j === last && end ? end : b.position;
+      blended.position[0] = lerp(from[0], to[0], t);
+      blended.position[1] = lerp(from[1], to[1], t);
       for (let k = 0; k < 3; k++) blended.rotation[k] = lerp(a.rotation[k], b.rotation[k], t);
+
+      // Size grows at a constant rate with scroll: start size at the top, start × GROWTH at the end.
+      const progress = THREE.MathUtils.clamp(scroll / stops[last], 0, 1);
+      blended.scale = poses[0].scale * lerp(1, GROWTH, progress);
       return blended;
     };
 
@@ -258,8 +298,8 @@ export function HandModel({ className = '' }: { className?: string }) {
         applyLook(isDark);
       }
 
-      const pose = poseAt(scroll);
       const visibleW = visibleH * camera.aspect;
+      const pose = poseAt(scroll, visibleW);
       rig.position.set(pose.position[0] * visibleW, pose.position[1] * visibleH, DEPTH);
       rig.scale.setScalar(pose.scale * visibleH);
       rig.rotation.set(
