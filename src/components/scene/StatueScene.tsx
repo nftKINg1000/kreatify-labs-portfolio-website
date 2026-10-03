@@ -21,19 +21,20 @@ interface Pose {
   rotation: [number, number, number];
 }
 
-/** One pose per scroll stop, in page order. The statue turns slowly, like walking around a monument. */
+/** One pose per scroll stop, in page order. The statue stays on the right-hand path for the whole
+    page and turns steadily, like walking around a monument. */
 const POSES: Pose[] = [
   { position: [0.24, -0.36], scale: 0.75, rotation: [0, deg(-28), 0] }, // hero: beside the headline, torch just under the wordmark
-  { position: [0.3, -0.08], scale: 0.95, rotation: [0, deg(62), 0] }, // audience
-  { position: [0.32, -0.02], scale: 0.66, rotation: [0, deg(150), 0] }, // capabilities
-  { position: [0.75, 0.05], scale: 0.8, rotation: [0, deg(220), 0] }, // proof: drifting out right
-  { position: [0.9, -1.3], scale: 0.9, rotation: [0, deg(270), 0] }, // approach/signature: parked off-screen
-  { position: [0.3, -1.3], scale: 0.9, rotation: [0, deg(300), 0] }, // pricing: waiting below view
-  { position: [0.37, -0.1], scale: 0.9, rotation: [0, deg(340), 0] }, // faq: rises again in navy
-  { position: [0.43, -0.08], scale: 0.8, rotation: [0, deg(372), 0] }, // end of page
+  { position: [0.29, -0.1], scale: 0.8, rotation: [0, deg(62), 0] }, // audience
+  { position: [0.31, -0.06], scale: 0.74, rotation: [0, deg(150), 0] }, // capabilities
+  { position: [0.32, -0.06], scale: 0.74, rotation: [0, deg(220), 0] }, // proof
+  { position: [0.33, -0.08], scale: 0.76, rotation: [0, deg(270), 0] }, // approach → signature
+  { position: [0.34, -0.08], scale: 0.76, rotation: [0, deg(300), 0] }, // pricing
+  { position: [0.37, -0.1], scale: 0.85, rotation: [0, deg(340), 0] }, // faq
+  { position: [0.42, -0.08], scale: 0.8, rotation: [0, deg(372), 0] }, // end of page
 ];
-/** Material switches to the navy look here, while the statue is out of view. */
-const DARK_STOP = 5;
+/** The look blends from silver to navy as the first dark section (signature) scrolls in. */
+const DARK_STOP = 4;
 const DEPTH = -4;
 /** Fade the plinth into the page: below START (fraction of height) is discarded, fully opaque from END. */
 const CUT = { start: 0.02, end: 0.16 };
@@ -147,19 +148,24 @@ export default function StatueScene({ onReady, onFailure }: StatueSceneProps) {
     let loaded = false;
     let raf = 0;
     let stops: number[] | null = null;
-    let dark: boolean | null = null;
+    let darkness = -1;
     const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
 
-    const applyLook = (isDark: boolean) => {
-      const look = isDark ? LOOKS.dark : LOOKS.light;
-      material.color.setHex(look.color);
-      material.metalness = look.metalness;
-      material.roughness = look.roughness;
-      key.color.setHex(look.key);
-      rim.intensity = look.rim;
-      ambient.groundColor.setHex(look.ground);
-      (scene.fog as THREE.Fog).color.setHex(look.fog);
-      document.documentElement.dataset.scene = isDark ? 'dark' : 'light';
+    const from = new THREE.Color();
+    const to = new THREE.Color();
+    const blend = (target: THREE.Color, a: number, b: number, t: number) => target.copy(from.setHex(a)).lerp(to.setHex(b), t);
+
+    /** t = 0 is the silver look, 1 the navy look; values between blend the two. */
+    const applyLook = (t: number) => {
+      const { light, dark } = LOOKS;
+      blend(material.color, light.color, dark.color, t);
+      material.metalness = lerp(light.metalness, dark.metalness, t);
+      material.roughness = lerp(light.roughness, dark.roughness, t);
+      blend(key.color, light.key, dark.key, t);
+      rim.intensity = lerp(light.rim, dark.rim, t);
+      blend(ambient.groundColor, light.ground, dark.ground, t);
+      blend((scene.fog as THREE.Fog).color, light.fog, dark.fog, t);
+      document.documentElement.dataset.scene = t < 0.5 ? 'light' : 'dark';
     };
 
     const poseAt = (scroll: number): Pose => {
@@ -186,10 +192,12 @@ export default function StatueScene({ onReady, onFailure }: StatueSceneProps) {
       if (!stops) stops = measureStops();
       const scroll = window.scrollY;
 
-      const isDark = stops ? scroll >= stops[DARK_STOP] : false;
-      if (isDark !== dark) {
-        dark = isDark;
-        applyLook(isDark);
+      // Blend over the half-screen in which the signature section rises into view.
+      const fadeStart = stops ? stops[DARK_STOP] : Infinity;
+      const t = THREE.MathUtils.clamp((scroll - fadeStart) / (window.innerHeight / 2), 0, 1);
+      if (t !== darkness) {
+        darkness = t;
+        applyLook(t);
       }
 
       pointer.x += (pointer.tx - pointer.x) * 0.12;
