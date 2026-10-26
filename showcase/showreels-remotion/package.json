@@ -1,0 +1,20 @@
+{
+  "name": "portfolio-showreels",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts AtelierPromo out/atelier.mp4",
+    "render:forma": "remotion render src/index.ts FormaPromo out/forma.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.350",
+    "remotion": "^4.0.350",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0",
+    "@types/react": "^19.1.0"
+  }
+}
